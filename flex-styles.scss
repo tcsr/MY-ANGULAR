@@ -129,3 +129,54 @@
 .self-stretch {
     align-self: stretch;
 }
+
+//-------------------  Usage ---------------------------------------//
+
+    <div margin-top class="container-h gap">
+      <mat-form-field class="content-flex">
+        <input matInput placeholder="First Name" formControlName="FirstName">
+      </mat-form-field>
+      <mat-form-field class="content-flex">
+        <input matInput placeholder="Last Name" formControlName="LastName">
+      </mat-form-field>
+    </div>
+
+    <div margin-top class="container-h gap">
+      <mat-form-field class="content-flex">
+        <input matInput placeholder="Title" formControlName="Title">
+      </mat-form-field>
+      <mat-form-field class="content-flex">
+        <input matInput placeholder="Company" formControlName="Company">
+      </mat-form-field>
+    </div>
+
+    <mat-form-field margin-top>
+      <input matInput placeholder="Address" formControlName="Address">
+    </mat-form-field>
+
+    <div margin-top class="container-h gap">
+      <mat-form-field class="content-flex">
+        <input matInput placeholder="City" formControlName="City">
+      </mat-form-field>
+      <mat-form-field class="content-flex">
+        <input matInput placeholder="State" formControlName="State">
+      </mat-form-field>
+      <mat-form-field class="content-flex">
+        <input matInput placeholder="Zipcode" formControlName="Zip">
+      </mat-form-field>
+    </div>
+
+    <div margin-top class="container-h gap">
+      <mat-form-field class="content-flex">
+        <input matInput placeholder="Telephone" formControlName="Phone">
+      </mat-form-field>
+      <mat-form-field class="content-flex">
+        <input matInput placeholder="Country" formControlName="Country">
+      </mat-form-field>
+    </div>
+
+    <div margin-top class="container-h gap justify-center center-align">
+      <ion-button color="primary" fill="outline" (click)="close()">Cancel</ion-button>
+      <ion-button color="primary" (click)="saveProfile()">Save Profile</ion-button>
+    </div>
+//-------------------  Usage ---------------------------------------//
