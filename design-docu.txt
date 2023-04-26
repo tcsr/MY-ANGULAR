@@ -1,0 +1,169 @@
+Keycloak Theme Update Design Document
+Objective:
+----------
+The objective of this project is to update the Keycloak theme to allow farmers and farm staff of New Zealand origin to login with their mobile number and OTP.
+
+Requirements:
+-------------
+Users must be able to login with their mobile number and OTP.
+OTP should be triggered using the OD Authorization service.
+If the mobile number is not available in the database, an error message should be displayed.
+The OTP should expire in 180 seconds.
+The timer should be displayed until the OTP expires.
+The "Send OTP" button should be disabled until the OTP expires.
+On entering the correct OTP, the user should be authenticated and allowed to login to the system.
+
+Design Changes:
+----------------
+The following design changes have been made to meet the requirements mentioned above:
+
+Added a new mobile number field to the login page.
+Added a "Send OTP" button to trigger the OTP to the user's mobile number.
+Added a timer to show the remaining time until the OTP expires.
+Disabled the "Send OTP" button until the OTP expires.
+Added a new authentication flow to handle the mobile number and OTP authentication.
+
+Flow Diagram:
+-------------
+Keycloak Theme Update Flow Diagram
+            +------------------+
+            |  Login with      |
+            |  Mobile Number   |
+            +------------------+
+                      |
+                      |
+                      v
+            +------------------+
+            |  Enter Mobile    |
+            |  Number          |
+            +------------------+
+                      |
+                      |
+                      v
+            +------------------+
+            |  Click "Send OTP" |
+            +------------------+
+                      |
+                      |
+                      v
+            +------------------+
+            |  OTP Sent        |
+            |  (Timer Starts)  |
+            +------------------+
+                      |
+                      |
+                      v
+            +------------------+
+            |  Enter OTP       |
+            +------------------+
+                      |
+                      |
+                      v
+            +------------------+
+            |  Authenticate    |
+            |  with Mobile No. |
+            |  and OTP         |
+            +------------------+
+                      |
+                      |
+                      v
+            +------------------+
+            |  Access Granted  |
+            +------------------+
+            
+This flow diagram illustrates the following steps:
+
+User enters their mobile number on the login page.
+User clicks the "Send OTP" button to trigger an OTP to their mobile number.
+The OTP is sent and the timer starts counting down from 180 seconds.
+User enters the OTP on the login page.
+The system authenticates the user with their mobile number and OTP.
+If the authentication is successful, access is granted to the user.
+
+
+            +------------------+
+            |  Login with      |
+            |  Mobile Number   |
+            +------------------+
+                      |
+                      |
+                      v
+            +------------------+
+            |  Enter Mobile    |
+            |  Number          |
+            +------------------+
+                      |
+                      |
+                      v
+            +------------------+
+            |  Click "Send OTP" |
+            +------------------+
+                      |
+                      |
+                      v
+            +------------------+
+            |  OTP Sent        |
+            |  (Timer Starts)  |
+            +------------------+
+                      |
+                      |
+                      v
+            +------------------+
+            |  Enter OTP       |
+            +------------------+
+                      |
+                      |
+                      v
+            +------------------+
+            |  Authenticate    |
+            |  with Mobile No. |
+            |  and OTP         |
+            +------------------+
+                      |
+                      |
+                      v
+            +------------------+
+            |  Access Granted  |
+            +------------------+
+                      |
+                      |
+                      v
+            +------------------+
+            |  API Error       |
+            |  (e.g., server   |
+            |  unavailable)    |
+            +------------------+
+                      |
+                      |
+                      v
+            +------------------+
+            |  Invalid         |
+            |  Credentials     |
+            +------------------+
+                      |
+                      |
+                      v
+            +------------------+
+            |  Error Message   |
+            +------------------+
+
+
+This flow diagram illustrates the following steps:
+
+User enters their mobile number on the login page.
+User clicks the "Send OTP" button to trigger an OTP to their mobile number.
+The OTP is sent and the timer starts counting down from 180 seconds.
+User enters the OTP on the login page.
+The system authenticates the user with their mobile number and OTP.
+If the authentication is successful, access is granted to the user.
+If there is an API error (e.g., server is unavailable), an error message is displayed to the user.
+If the user enters invalid credentials, an error message is displayed to the user.
+
+
+Technical Implementation:
+-------------------------
+To trigger the OTP to the mobile number, we are calling the OD Authorization service. If the mobile number is not available in the database, an error message will be displayed. Once the OTP is sent, it will expire in 180 seconds, and the timer will be displayed until the OTP expires. On entering the correct OTP, the mobile number and OTP will be considered as the Keycloak username and password, and the user will be authenticated and allowed to login to the system.
+
+Conclusion:
+-----------
+This Keycloak theme update will allow farmers and farm staff of New Zealand origin to login with their mobile number and OTP, providing a more secure and efficient way of authentication.
