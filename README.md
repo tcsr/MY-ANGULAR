@@ -1,27 +1,70 @@
-# Myangular
+import { Injectable } from '@angular/core';
+import Keycloak from 'keycloak-js';
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 6.0.0.
+@Injectable({
+  providedIn: 'root'
+})
+export class KeycloakService {
 
-## Development server
+  private keycloak: Keycloak.KeycloakInstance;
+  private lastActivityTime: number;
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+  constructor() {
+    this.keycloak = Keycloak({
+      url: 'KEYCLOAK_URL',
+      realm: 'REALM_NAME',
+      clientId: 'CLIENT_ID'
+    });
+    this.lastActivityTime = Date.now();
+    this.init();
+    this.setupActivityListener();
+  }
 
-## Code scaffolding
+  async init(): Promise<void> {
+    await this.keycloak.init({
+      onLoad: 'login-required',
+      checkLoginIframe: false,
+      silentCheckSsoRedirectUri: window.location.origin + '/assets/silent-check-sso.html'
+    });
+  }
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+  getToken(): string {
+    return this.keycloak.token;
+  }
 
-## Build
+  refreshToken(): Promise<string> {
+    return new Promise((resolve, reject) => {
+      this.keycloak.updateToken(5) // Refresh token every 5 seconds
+        .success(() => resolve(this.keycloak.token))
+        .error(() => reject('Failed to refresh token'));
+    });
+  }
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+  isSessionExpiringSoon(): boolean {
+    const sessionExpirationTime = this.keycloak.tokenParsed.exp * 1000;
+    const sessionIdleThreshold = 30 * 60 * 1000; // 30 minutes in milliseconds
+    const currentTime = Date.now();
 
-## Running unit tests
+    // Check if the user has been active within the last 20 minutes
+    const isActiveUser = currentTime - this.lastActivityTime <= 20 * 60 * 1000;
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+    // If the user is active and the session is expiring soon, return false
+    if (isActiveUser && sessionExpirationTime - currentTime <= sessionIdleThreshold) {
+      return false;
+    }
 
-## Running end-to-end tests
+    // If the user is inactive and the session is expiring soon, return true
+    return !isActiveUser && sessionExpirationTime - currentTime <= sessionIdleThreshold;
+  }
 
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+  private setupActivityListener(): void {
+    document.addEventListener('mousemove', () => {
+      // Update the last activity time whenever there's mouse movement
+      this.lastActivityTime = Date.now();
+    });
+    document.addEventListener('keydown', () => {
+      // Update the last activity time whenever there's a key press
+      this.lastActivityTime = Date.now();
+    });
+  }
+}
