@@ -68,3 +68,47 @@ export class KeycloakService {
     });
   }
 }
+
+
+================
+
+import { Injectable } from '@angular/core';
+import { HttpInterceptor, HttpRequest, HttpHandler, HttpEvent } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { mergeMap } from 'rxjs/operators';
+import { KeycloakService } from './keycloak.service';
+
+@Injectable()
+export class TokenInterceptor implements HttpInterceptor {
+
+  constructor(private keycloakService: KeycloakService) {}
+
+  intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+    // Check if the session idle time is less than or equal to 30 minutes
+    if (this.keycloakService.isSessionExpiringSoon()) {
+      // Refresh the token before proceeding with the HTTP request
+      return this.keycloakService.refreshToken().pipe(
+        mergeMap(() => {
+          // Get the updated token and proceed with the HTTP request
+          const token = this.keycloakService.getToken();
+          request = request.clone({
+            setHeaders: {
+              Authorization: `Bearer ${token}`
+            }
+          });
+          return next.handle(request);
+        })
+      );
+    } else {
+      // If session idle time is greater than 30 minutes, proceed with the HTTP request as usual
+      const token = this.keycloakService.getToken();
+      request = request.clone({
+        setHeaders: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      return next.handle(request);
+    }
+  }
+}
+================
